@@ -93,3 +93,5 @@ resource "aws_route_table_association" "routesubnet" {
   subnet_id      = aws_subnet.pub_sub.id
   route_table_id = aws_route_table.myroutetable.id
 }
+
+
