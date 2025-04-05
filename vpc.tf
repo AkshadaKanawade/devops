@@ -1,11 +1,12 @@
 resource "aws_vpc" "my_vpc" {
- cidr_block = "10.0.0./16"
- tags = {
- name = "myvpc"
- env = "dev"
+   cidr_block = "10.0.0.0/16"
+   tags = {
+   name = "myvpc"
+   env = "dev"
  }
 }
 
+#subnet
 resource "aws_subnet" "pub_sub" {
   vpc_id = aws_vpc.my_vpc.id
   cidr_block = "10.0.0.0/20"
@@ -45,6 +46,3 @@ resource "aws_route_table_association" "routesubnet" {
 }
 
 
-# {
-#     resource "aws "
-# }
