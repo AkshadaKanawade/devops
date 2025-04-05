@@ -1,175 +1,71 @@
-# # resource "aws_vpc" "my_vpc" {
-# #    cidr_block = "10.0.0.0/16"
-# #    tags = {
-# #    name = "myvpc"
-# #    env = "dev"
-# #  }
-# # }
-
-# # #subnet
-# # resource "aws_subnet" "pub_sub" {
-# #   vpc_id = aws_vpc.my_vpc.id
-# #   cidr_block = "10.0.0.0/20"
-# #   map_public_ip_on_launch = true
-# #   tags = {
-# #   name = "pubsubnet"
-# #   env = "dev"
-# #   }
-# # }
-
-# # resource "aws_subnet" "pvt_sub" {
-# #   vpc_id = aws_vpc.my_vpc.id
-# #   cidr_block = "10.0.1.0/20"
-# #   map_public_ip_on_launch = false
-# #   tags = {
-# #   name = "pvtsubnet"
-# #   env = "dev"
-# #   }  
-# # }
-
-# # resource "aws_internet_gateway" "myigw" {
-# #     vpc_id = aws_vpc.my_vpc
-# # }
-
-# # resource "aws_route_table" "myroutetable" {
-# #     vpc_id = aws_vpc.my_vpc
-# #     route = {
-# #         cidr_block = "10.0.1.0/24"
-# #         gateway_id = aws_internet_gateway.myigw.id
-# #     }
-# # }
-
-# # resource "aws_route_table_association" "routesubnet" {
-# #     subnet_id = aws_subnet.pub_sub
-# #     route_table_id = aws_route_table.myroutetable.id
-
-# # }
-
-
-# resource "aws_vpc" "my_vpc" {
-#   cidr_block = "10.0.0.0/16"
-#   tags = {
-#     Name = "myvpc"
-#     Env  = "dev"
-#   }
-# }
-
-# resource "aws_subnet" "pub_sub" {
-#   vpc_id                  = aws_vpc.my_vpc.id
-#   cidr_block              = "10.0.0.0/20"
-#   map_public_ip_on_launch = true
-#   availability_zone       = "us-east-1a" # optional but good to specify
-#   tags = {
-#     Name = "pubsubnet"
-#     Env  = "dev"
-#   }
-# }
-
-# resource "aws_subnet" "pvt_sub" {
-#   vpc_id                  = aws_vpc.my_vpc.id
-#   cidr_block              = "10.0.16.0/20"
-#   map_public_ip_on_launch = false
-#   availability_zone       = "us-east-1a"
-#   tags = {
-#     Name = "pvtsubnet"
-#     Env  = "dev"
-#   }
-# }
-
-# resource "aws_internet_gateway" "myigw" {
-#   vpc_id = aws_vpc.my_vpc.id
-# }
-
-# resource "aws_route_table" "myroutetable" {
-#   vpc_id = aws_vpc.my_vpc.id
-
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.myigw.id
-#   }
-# }
-
-# resource "aws_route_table_association" "routesubnet" {
-#   subnet_id      = aws_subnet.pub_sub.id
-#   route_table_id = aws_route_table.myroutetable.id
-# }
-
+terraform {
+  backend "s3" {
+    region = "us-east-1"
+    bucket = "devopb4"
+    key = "terrafrom.tfstate"
+  }
+}
 provider "aws" {
-  region = "us-east-2"
+  region = var.region
 }
-
-# VPC
-resource "aws_vpc" "my_vpc" {
-  cidr_block = "10.0.0.0/16"
-
+resource "aws_instance" "myec2" {
+  ami = "ami-0100e595e1cc1ff7f"
+  key_name = "id_rsa"
+  instance_type =  "t2.micro"
+  subnet_id = aws_subnet.pub_sub.id
   tags = {
-    Name = "my-vpc"
+    Name = "spiderman instance"
   }
 }
 
-# Public Subnet
+resource "aws_vpc" "spider_vpc" {
+    cidr_block = "10.0.0.0/16"
+  tags = {
+    name = "spider_vpc"
+    env = "dev"
+  }
+}
 resource "aws_subnet" "pub_sub" {
-  vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = "10.0.0.0/20"
-  availability_zone       = "us-east-2a"
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name = "public-subnet"
+    vpc_id = aws_vpc.spider_vpc.id
+    cidr_block = "10.0.0.0/24"
+    map_public_ip_on_launch = true
+    tags = {
+    name = "my_pub_subnet"
+    env = "dev"
   }
 }
-
-# Internet Gateway
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.my_vpc.id
-
-  tags = {
-    Name = "my-igw"
+resource "aws_subnet" "pvt_sub" {
+    vpc_id = aws_vpc.spider_vpc.id
+    cidr_block = "10.0.1.0/24"
+    map_public_ip_on_launch = false
+    tags = {
+    name = "my_pvt_subnet"
+    env = "dev"
   }
 }
-
-# Route Table
-resource "aws_route_table" "public_rt" {
-  vpc_id = aws_vpc.my_vpc.id
-
+resource "aws_internet_gateway" "myigw" {
+  vpc_id = aws_vpc.spider_vpc.id
+}
+resource "aws_route_table" "myroutetable" {
+  vpc_id = aws_vpc.spider_vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
-
-  tags = {
-    Name = "public-route-table"
+    gateway_id = aws_internet_gateway.myigw.id
   }
 }
 
-# Route Table Association
-resource "aws_route_table_association" "public_rt_assoc" {
+resource "aws_route_table_association" "route-subnet" {
   subnet_id      = aws_subnet.pub_sub.id
-  route_table_id = aws_route_table.public_rt.id
+  route_table_id = aws_route_table.myroutetable.id
 }
 
-# Security Group
-resource "aws_security_group" "mysg1" {
-  name        = "mysg1"
-  description = "Allow SSH"
-  vpc_id      = aws_vpc.my_vpc.id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "mysg1"
-  }
+variable "region" {
+   default = "us-east-1"
+}
+output "aws_instance" {
+  value = aws_instance.myec2.public_ip
 }
 
+output "aws_vpc" {
+  value = aws_vpc.spider_vpc.id
+}
