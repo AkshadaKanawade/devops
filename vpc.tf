@@ -7,8 +7,10 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
+  alias  = "vpc"
+  region = "us-east-1"
 }
+
 
 resource "aws_instance" "myec2-instance" {
   ami = "ami-01816d07b1128cd2d"
