@@ -1,34 +1,21 @@
 terraform {
   backend "s3" {
+    region = "us-east-2"
     bucket = "nashik-bucket1"
-    key    = "terraform.tfstate"
-    region = "us-east-1"
+    key = "terrafrom.tfstate"
   }
 }
-
 provider "aws" {
-  region = "us-east-1"
+  region = var.region
 }
-
-resource "aws_instance" "myec2_instance" {
-  ami             = "ami-01816d07b1128cd2d"
-  instance_type   = "t2.micro"
-  key_name        = "id_rsa"
-  security_groups = ["mysg1"]
-  subnet_id       = aws_subnet.pub_sub.id
-
+resource "aws_instance" "myec1" {
+  ami = "ami-01816d07b1128cd2d"
+  key_name = "ohio-key.pem"
+  instance_type =  "t2.micro"
+  subnet_id = aws_subnet.pub_sub.id
   tags = {
     Name = "spiderman instance"
-  }
-}
-
-
-
-
-
-
-output "instance_public_ip" {
-  value = aws_instance.myec2_instance.public_ip
+  } 
 }
 
 resource "aws_vpc" "spider_vpc" {
@@ -53,7 +40,7 @@ resource "aws_subnet" "pvt_sub" {
     map_public_ip_on_launch = false
     tags = {
     name = "my_pvt_subnet"
-    env = "devop"
+    env = "dev"
   }
 }
 resource "aws_internet_gateway" "myigw" {
@@ -76,10 +63,9 @@ variable "region" {
    default = "us-east-1"
 }
 output "aws_instance" {
-  value = aws_instance.myec2-instance.public_ip
+  value = aws_instance.myec1.public_ip
 }
 
 output "aws_vpc" {
   value = aws_vpc.spider_vpc.id
 }
-
