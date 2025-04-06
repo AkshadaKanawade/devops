@@ -22,6 +22,11 @@ resource "aws_instance" "myec2_instance" {
   }
 }
 
+
+
+
+
+
 output "instance_public_ip" {
   value = aws_instance.myec2_instance.public_ip
 }
