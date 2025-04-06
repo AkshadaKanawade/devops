@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    region = "us-east-2"
+    region = "us-east-1"
     bucket = "devopsb4"
     key = "terrafrom.tfstate"
   }
@@ -62,7 +62,7 @@ resource "aws_route_table_association" "route-subnet" {
 }
 
 variable "region" {
-   default = "us-east-2"
+   default = "us-east-1"
 }
 output "aws_instance" {
   value = aws_instance.myec2-instance.public_ip
