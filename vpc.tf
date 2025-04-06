@@ -1,10 +1,11 @@
 terraform {
   backend "s3" {
-    region = "us-east-1"
     bucket = "devopsb4"
-    key = "terrafrom.tfstate"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
   }
 }
+
 
 provider "aws" {
   alias  = "vpc"
