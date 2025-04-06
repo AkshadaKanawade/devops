@@ -10,7 +10,7 @@ provider "aws" {
   region = var.region
 }
 
-resource "aws_instance" "myec2" {
+resource "aws_instance" "myec2-instance" {
   ami = "ami-01816d07b1128cd2d"
   key_name = "id_rsa"
   instance_type =  "t2.micro"
@@ -65,11 +65,10 @@ variable "region" {
    default = "us-east-2"
 }
 output "aws_instance" {
-  value = aws_instance.myec2.public_ip
+  value = aws_instance.myec2-instance.public_ip
 }
 
 output "aws_vpc" {
   value = aws_vpc.spider_vpc.id
 }
 
-# {}
