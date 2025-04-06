@@ -1,20 +1,22 @@
 terraform {
   backend "s3" {
-    region = "us-east-1"
-    bucket = "devopb4"
+    region = "us-east-2"
+    bucket = "devopsb4"
     key = "terrafrom.tfstate"
   }
 }
+
 provider "aws" {
   region = var.region
 }
+
 resource "aws_instance" "myec2" {
-  ami = "ami-0100e595e1cc1ff7f"
+  ami = "ami-01816d07b1128cd2d"
   key_name = "id_rsa"
   instance_type =  "t2.micro"
   subnet_id = aws_subnet.pub_sub.id
   tags = {
-    Name = "spiderman instance"
+    Name = "spider instance"
   }
 }
 
@@ -40,7 +42,7 @@ resource "aws_subnet" "pvt_sub" {
     map_public_ip_on_launch = false
     tags = {
     name = "my_pvt_subnet"
-    env = "dev"
+    env = "devop"
   }
 }
 resource "aws_internet_gateway" "myigw" {
@@ -60,7 +62,7 @@ resource "aws_route_table_association" "route-subnet" {
 }
 
 variable "region" {
-   default = "us-east-1"
+   default = "us-east-2"
 }
 output "aws_instance" {
   value = aws_instance.myec2.public_ip
@@ -69,4 +71,5 @@ output "aws_instance" {
 output "aws_vpc" {
   value = aws_vpc.spider_vpc.id
 }
-}
+
+# {}
