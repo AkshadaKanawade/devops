@@ -1,7 +1,7 @@
 provider "aws" {
   region = "us-east-2" 
 }
-resource "aws_instance" "myec1" {
+resource "aws_instance" "myec3" {
   ami = "ami-01816d07b1128cd2d"
   key_name = "ohio-key.pem"
   instance_type =  "t2.micro"

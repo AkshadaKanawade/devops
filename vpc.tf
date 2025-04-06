@@ -8,7 +8,7 @@ terraform {
 provider "aws" {
   region = var.region
 }
-resource "aws_instance" "myec1" {
+resource "aws_instance" "myec3" {
   ami = "ami-01816d07b1128cd2d"
   key_name = "ohio-key.pem"
   instance_type =  "t2.micro"
@@ -63,7 +63,7 @@ variable "region" {
    default = "us-east-1"
 }
 output "aws_instance" {
-  value = aws_instance.myec1.public_ip
+  value = aws_instance.myec3.public_ip
 }
 
 output "aws_vpc" {
