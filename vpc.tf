@@ -1,10 +1,10 @@
-# terraform {
-#   backend "s3" {
-#     bucket = "devopsb4"
-#     key    = "terraform.tfstate"
-#     region = "us-east-1"
-#   }
-# }
+terraform {
+  backend "s3" {
+    bucket = "nashik-bucket1"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+  }
+}
 
 
 provider "aws" {
